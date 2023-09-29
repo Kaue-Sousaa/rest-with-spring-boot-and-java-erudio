@@ -7,6 +7,7 @@ import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -16,20 +17,13 @@ import br.com.erudio.configs.TestConfigs;
 import br.com.erudio.integrationtests.testcontainers.AbstractIntegrationTest;
 import br.com.erudio.integrationtests.vo.AccountCredentialsVO;
 import br.com.erudio.integrationtests.vo.TokenVO;
-import io.restassured.builder.RequestSpecBuilder;
-import io.restassured.filter.log.LogDetail;
-import io.restassured.filter.log.RequestLoggingFilter;
-import io.restassured.filter.log.ResponseLoggingFilter;
-import io.restassured.specification.RequestSpecification;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @TestMethodOrder(OrderAnnotation.class)
-public class AuthControllerJsonTest extends AbstractIntegrationTest{
+public class AuthControllerJsonTest extends AbstractIntegrationTest {
 	
-	private static TokenVO tokenVO;
-	
-	public AuthControllerJsonTest() {}
-	
+	@Autowired
+	private TokenVO tokenVO;
 	
 	@Test
 	@Order(1)
@@ -38,12 +32,7 @@ public class AuthControllerJsonTest extends AbstractIntegrationTest{
 		AccountCredentialsVO user = 
 				new AccountCredentialsVO("leandro", "admin123");
 		
-		RequestSpecification specification = new RequestSpecBuilder()
-					.addFilter(new RequestLoggingFilter(LogDetail.ALL))
-					.addFilter(new ResponseLoggingFilter(LogDetail.ALL))
-				.build();
-		
-		tokenVO = given().spec(specification)
+		tokenVO = given()
 				.basePath("/auth/signin")
 					.port(TestConfigs.SERVER_PORT)
 					.contentType(TestConfigs.CONTENT_TYPE_JSON)
@@ -68,10 +57,10 @@ public class AuthControllerJsonTest extends AbstractIntegrationTest{
 				.basePath("/auth/refresh")
 				.port(TestConfigs.SERVER_PORT)
 				.contentType(TestConfigs.CONTENT_TYPE_JSON)
-					.pathParam("userName", tokenVO.getUserName())
+					.pathParam("username", tokenVO.getUsername())
 					.header(TestConfigs.HEADER_PARAM_AUTHORIZATION, "Bearer " + tokenVO.getRefreshToken())
 				.when()
-					.put("{userName}")
+					.put("{username}")
 				.then()
 					.statusCode(200)
 				.extract()
@@ -80,5 +69,5 @@ public class AuthControllerJsonTest extends AbstractIntegrationTest{
 		
 		assertNotNull(newTokenVO.getAccessToken());
 		assertNotNull(newTokenVO.getRefreshToken());
-	}	
+	}
 }

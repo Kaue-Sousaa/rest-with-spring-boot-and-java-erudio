@@ -1,6 +1,7 @@
 package br.com.erudio.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -13,7 +14,7 @@ import br.com.erudio.data.vo.v1.security.TokenVO;
 import br.com.erudio.repositories.UserRepository;
 import br.com.erudio.security.jwt.JwtTokenProvider;
 
-@Service
+@Configuration
 public class AuthServices {
 
 	@Autowired

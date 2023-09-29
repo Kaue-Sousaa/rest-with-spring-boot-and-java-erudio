@@ -15,10 +15,9 @@ import com.github.dozermapper.core.Mapping;
 public class BookVO extends RepresentationModel<BookVO> implements Serializable{
 	private static final long serialVersionUID = 1L;
 	
-	@Mapping("id")
 	@JsonProperty("id")
+	@Mapping("id")
 	private Long key;
-	
 	private String author;
 	private Date launchDate;
 	private Double price;

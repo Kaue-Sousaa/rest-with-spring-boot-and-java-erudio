@@ -7,6 +7,7 @@ import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -19,8 +20,9 @@ import br.com.erudio.integrationtests.vo.TokenVO;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @TestMethodOrder(OrderAnnotation.class)
-public class AuthControllerXmlTest extends AbstractIntegrationTest{
+public class AuthControllerXmlTest extends AbstractIntegrationTest {
 	
+	@Autowired
 	private static TokenVO tokenVO;
 	
 	@Test
@@ -33,7 +35,7 @@ public class AuthControllerXmlTest extends AbstractIntegrationTest{
 		tokenVO = given()
 				.basePath("/auth/signin")
 					.port(TestConfigs.SERVER_PORT)
-					.contentType(TestConfigs.CONTENT_TYPE_JSON)
+					.contentType(TestConfigs.CONTENT_TYPE_XML)
 				.body(user)
 					.when()
 				.post()
@@ -54,11 +56,11 @@ public class AuthControllerXmlTest extends AbstractIntegrationTest{
 		var newTokenVO = given()
 				.basePath("/auth/refresh")
 				.port(TestConfigs.SERVER_PORT)
-				.contentType(TestConfigs.CONTENT_TYPE_JSON)
-					.pathParam("userName", tokenVO.getUserName())
+				.contentType(TestConfigs.CONTENT_TYPE_XML)
+					.pathParam("username", tokenVO.getUsername())
 					.header(TestConfigs.HEADER_PARAM_AUTHORIZATION, "Bearer " + tokenVO.getRefreshToken())
 				.when()
-					.put("{userName}")
+					.put("{username}")
 				.then()
 					.statusCode(200)
 				.extract()
@@ -67,5 +69,5 @@ public class AuthControllerXmlTest extends AbstractIntegrationTest{
 		
 		assertNotNull(newTokenVO.getAccessToken());
 		assertNotNull(newTokenVO.getRefreshToken());
-	}	
+	}
 }
